@@ -15,14 +15,15 @@ protected:
     int defense;
 
 public:
-    Entity(string n, int h, int atk, int def) 
-        : nama(n), hp(h), max_hp(h), attack_power(atk), defense(def) {}
+    Entity(string n, int h, int MaxHP, int atk, int def) 
+        : nama(n), hp(h), max_hp(MaxHP), attack_power(atk), defense(def) {}
 
     virtual ~Entity() {}
 
     // Getter
     string getNama() const { return nama; }
     int getHP() const { return hp; }
+    int getMaxHP() const { return max_hp; }
     int getDefense() const { return defense; }
     virtual int getMana() const { return 0; } 
     bool isAlive() const { return hp > 0; }
@@ -58,11 +59,14 @@ public:
 class Mage : public Entity {
 private:
     int mana;
+    int max_mana;
 
 public:
     int getMana() const override { return mana; }
-    Mage(string n, int h, int atk, int def, int m) 
-        : Entity(n, h, atk, def), mana(m) {}
+    int getMaxmana() const { return max_mana; }
+    
+    Mage(string n, int h, int MaxHP, int atk, int def, int m, int max_mana) 
+        : Entity(n, h, MaxHP, atk, def), mana(m), max_mana(max_mana) {}
 
     void serang(Entity* target) override {
         cout << "\n⚔️ " << nama << " menyerang " << target->getNama() << " dengan Staff!\n";
@@ -103,18 +107,37 @@ public:
 };
 
 class Knight : public Entity {
-public:
-    Knight(string n, int h, int atk, int def) 
-        : Entity(n, h, atk, def) {}
+private:
+    int faith;
+    int max_faith;
 
+public:
+    int getFaith() const { return faith; }
+    int getMaxfaith() const { return max_faith; }
+    
+    Knight(string n, int h, int MaxHP, int atk, int def, int f, int max_faith) 
+        : Entity(n, h, MaxHP, atk, def), faith(f), max_faith(max_faith) {}
+
+    void regenFaith() {
+        faith += 20;
+        cout << "\n🛡️ " << nama << "Menggunakan Regen Faith, Faith + 20 \n";
+    }
+    
     void serang(Entity* target) override {
         cout << "\n🛡️ " << nama << " menyerang " << target->getNama() << " dengan Pedang!\n";
         target->terimaDamage(attack_power);
     }
-
+    
     void shieldBlock() {
-        cout << "\n🛡️ " << nama << " menggunakan Shield Block untuk meningkatkan pertahanan!\n";
-        defense += 10;
+        if (faith >= 20) {
+            faith -= 20;
+            cout << "\n🛡️ " << nama << " menggunakan Shield Block untuk meningkatkan pertahanan!\n";
+            defense += 10;
+        } else {
+            cout << "Tidak Memiliki cukup Faith! (Faith : " << faith << ")\n";
+            cout << "Mengcast Regen Faith\n";
+            regenFaith();
+        }
     }
 
     void powerStrike(Entity* target) {
@@ -133,8 +156,8 @@ public:
 // 3. KELAS MUSUH (MONSTER)
 class Monster : public Entity {
 public:
-    Monster(string n, int h, int atk, int def) 
-        : Entity(n, h, atk, def) {}
+    Monster(string n, int h, int Mh, int atk, int def) 
+        : Entity(n, h, Mh, atk, def) {}
 
     void serang(Entity* target) override {
         cout << "\n🐾 " << nama << " menerjang " << target->getNama() << "!\n";
@@ -147,9 +170,6 @@ int main() {
     srand(time(0));
 
     string nama_mage, nama_knight, nama_monster;
-    int hp_mage, atk_mage, def_mage, mana_mage;
-    int hp_knight, atk_knight, def_knight;
-    int hp_monster, atk_monster, def_monster;
 
     cout << "===============================================================================================\n";
     cout << "==========               Selamat datang di Game Pertarungan Sederhana!               ==========\n";
@@ -158,44 +178,27 @@ int main() {
     cout << "================================== Pembuatan Karakter =========================================\n";
     cout << "Masukkan nama Mage: ";                           
     cin >> nama_mage;
-    cout << "Masukkan HP Mage: ";
-    cin >> hp_mage;
-    cout << "Masukkan Attack Mage: ";
-    cin >> atk_mage;
-    cout << "Masukkan Defense Mage: ";
-    cin >> def_mage;
-    cout << "Masukkan Mana Mage: ";
-    cin >> mana_mage;
 
     cout << "===============================================================================================\n";
 
     cout << "Masukkan nama Knight: ";
     cin >> nama_knight;
-    cout << "Masukkan HP Knight: ";
-    cin >> hp_knight;
-    cout << "Masukkan Attack Knight: ";
-    cin >> atk_knight;
-    cout << "Masukkan Defense Knight: ";
-    cin >> def_knight;
 
     cout << "===============================================================================================\n";
 
     cout << "Masukkan nama Monster: ";
     cin >> nama_monster;
-    cout << "Masukkan HP Monster: ";
-    cin >> hp_monster;
-    cout << "Masukkan Attack Monster: ";
-    cin >> atk_monster;
-    cout << "Masukkan Defense Monster: ";
-    cin >> def_monster;
 
     cout << "===============================================================================================\n";
 
-    Mage* p1 = new Mage(nama_mage, hp_mage, atk_mage, def_mage, mana_mage);
-    Knight* p2 = new Knight(nama_knight, hp_knight, atk_knight, def_knight);
-    Monster* m1 = new Monster(nama_monster, hp_monster, atk_monster, def_monster);
+    //Mage(nama, hp, max_hp, attack_power, defense, mana, max_mana);
+    //Knight(nama, hp, max_hp, attack_power, defense, faith, max_faith);
+    //monster(nama,hp, max_hp, attack_power, defense)
+    Mage* p1 = new Mage (nama_mage, 100, 100, 20, 10, 50, 50);
+    Knight* p2 = new Knight (nama_knight, 150, 150, 25, 15, 60, 60);
+    Monster* m1 = new Monster (nama_monster, 1200, 1200, 30, 12);
 
-    cout << "=== BATTLE START: " << p1->getNama() << " VS " << m1->getNama() << " ===\n";
+    cout << "=== BATTLE START: " << p1->getNama() << " And "<< p2->getNama() << " VS " << m1->getNama() << " ===\n";
 
     // Loop Pertarungan
     int turn = 1;
@@ -203,10 +206,10 @@ int main() {
         cout << "\n--- Turn " << turn << " ---\n";
 
         cout << "\nStatus:\n";
-        cout << p1->getNama() << " - HP: " << p1->getHP() << ", Mana: " << p1->getMana() << "\n";
-        cout << p2->getNama() << " - HP: " << p2->getHP() << "\n";
-        cout << m1->getNama() << " - HP: " << m1->getHP() << "\n";
-        
+        cout << p1->getNama() << " - HP: " << p1->getHP() << "/" << p1->getMaxHP() << ", Mana: " << p1->getMana() << "/" << p1->getMaxmana() <<"\n";
+        cout << p2->getNama() << " - HP: " << p2->getHP() << "/" << p2->getMaxHP() << ", Faith: " << p2->getFaith() << "/" << p2->getMaxfaith() <<"\n";
+        cout << m1->getNama() << " - HP: " << m1->getHP() << "/" << m1->getMaxHP() << "\n";
+
         // Giliran Player
         int pilihan_pemain;
         cout << "\nPilih Hero:\n";
@@ -262,7 +265,8 @@ int main() {
             cout << "1. Serangan biasa\n";
             cout << "2. powerStrike\n";
             cout << "3. ultimateCharge\n";
-            cout << "4. Shield Block (meningkatkan pertahanan)\n";
+            cout << "4. Shield Block (butuh 20 Faith)\n";
+            cout << "5. Regen Faith\n";
             cout << "Pilihan: ";
             cin >> aksi;
 
@@ -274,6 +278,8 @@ int main() {
                 p2->ultimateCharge(m1);
             } else if (aksi == 4) {
                 p2->shieldBlock();
+            } else if (aksi == 5) {
+                p2->regenFaith();
             } else {
                 cout << "Pilihan tidak valid. Giliran terlewat.\n";
             }
@@ -283,9 +289,9 @@ int main() {
             cout << "\n🎉 " << m1->getNama() << " telah dikalahkan!\n";
             break;
         }
-//      
+        
         if (!pemain_kedua->isAlive()) {
-            cout << pemain_kedua->getNama() << " sudah gugur dan melewati giliran.\n";
+            cout << pemain_kedua->getNama() << " sudah gugur and melewati giliran.\n";
         } else {
             if (pemain_kedua == p1) {
                 cout << "\n" << p1->getNama() << " - Pilih aksi:\n";
@@ -309,7 +315,8 @@ int main() {
                 cout << "1. Serangan biasa\n";
                 cout << "2. powerStrike\n";
                 cout << "3. ultimateCharge\n";
-                cout << "4. Shield Block (meningkatkan pertahanan)\n";
+                cout << "4. Shield Block (butuh 20 Faith)\n";
+                cout << "5. Regen Faith\n";
                 cout << "Pilihan: ";
                 cin >> aksi;
 
@@ -321,6 +328,8 @@ int main() {
                     p2->ultimateCharge(m1);
                 } else if (aksi == 4) {
                     p2->shieldBlock();
+                } else if (aksi == 5) {
+                    p2->regenFaith();
                 } else {
                     cout << "Pilihan tidak valid. Giliran terlewat.\n";
                 }
@@ -334,17 +343,15 @@ int main() {
         
         // Monster selalu menyerang sekali setiap turn
         if (p1->isAlive() && p2->isAlive()) {
-            // Kedua pemain hidup, serang yang HP lebih rendah
-            if (p1->getHP() <= p2->getHP()) {
+            int target_random = rand() % 2;
+            if (target_random == 0) {
                 m1->serang(p1);
             } else {
                 m1->serang(p2);
             }
         } else if (p1->isAlive()) {
-            // Hanya p1 hidup
             m1->serang(p1);
         } else if (p2->isAlive()) {
-            // Hanya p2 hidup
             m1->serang(p2);
         }
         
@@ -361,6 +368,7 @@ int main() {
         if (!p2->isAlive()) {
             cout << "\n💀 " << p2->getNama() << " telah gugur dalam pertempuran...\n";
         }
+        cout << "===============================================================================================\n";
         turn++;
     }
     cout << "\n=== BATTLE END ===\n";
@@ -372,19 +380,20 @@ int main() {
     }
     cout << "=============================\n";
     cout << "Status Akhir:\n";
-    cout << p1->getNama() << " - HP: " << p1->getHP() << ", Mana: " << p1->getMana() << "\n";
-    cout << p2->getNama() << " - HP: " << p2->getHP() << ", Mana: " << p2->getMana() << "\n";
-    cout << m1->getNama() << " - HP: " << m1->getHP() << "\n";
+    cout << p1->getNama() << " - HP: " << p1->getHP() << "/" << p1->getMaxHP() << ", Mana: " << p1->getMana() << "/" << p1->getMaxmana() << "\n";
+    cout << p2->getNama() << " - HP: " << p2->getHP() << "/" << p1->getMaxHP() << ", Faith: " << p2->getFaith() << "/" << p2->getMaxfaith() << "\n";
+    cout << m1->getNama() << " - HP: " << m1->getHP() << "/" << p1->getMaxHP() << "\n";
     cout << "total turn: " << turn - 1 << "\n";
-    cout << "Total damage diterima oleh " << p1->getNama() << ": " << (hp_mage - p1->getHP()) << "\n";
-    cout << "Total damage diterima oleh " << p2->getNama() << ": " << (hp_knight - p2->getHP()) << "\n";
-    cout << "Total damage diterima oleh " << m1->getNama() << ": " << (hp_monster - m1->getHP()) << "\n";   
+    cout << "Total damage diterima oleh " << p1->getNama() << ": " << (p1->getMaxHP() - p1->getHP()) << "\n";
+    cout << "Total damage diterima oleh " << p2->getNama() << ": " << (p2->getMaxHP() - p2->getHP()) << "\n";
+    cout << "Total damage diterima oleh " << m1->getNama() << ": " << (m1->getMaxHP() - m1->getHP()) << "\n";   
     cout << "=============================\n";
     cout << "Terima kasih telah bermain!\n";
     cout << "=============================\n";
     
 
     // Pembersihan memori
+
     delete p1;
     delete m1;
     delete p2;

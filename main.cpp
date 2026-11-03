@@ -13,10 +13,13 @@ protected:
     int max_hp;
     int attack_power;
     int defense;
+    int level;
+    int exp;
+    int max_exp;
 
 public:
     Entity(string n, int h, int MaxHP, int atk, int def) 
-        : nama(n), hp(h), max_hp(MaxHP), attack_power(atk), defense(def) {}
+        : nama(n), hp(h), max_hp(MaxHP), attack_power(atk), defense(def), level(1), exp(0), max_exp(100) {}
 
     virtual ~Entity() {}
 
@@ -25,6 +28,9 @@ public:
     int getHP() const { return hp; }
     int getMaxHP() const { return max_hp; }
     int getDefense() const { return defense; }
+    int getLevel() const { return level; }
+    int getExp() const { return exp; }
+    int getMaxExp() const { return max_exp; }
     virtual int getMana() const { return 0; } 
     bool isAlive() const { return hp > 0; }
 
@@ -49,6 +55,26 @@ public:
         cout << nama << " menerima " << actual_damage
              << " damage! (Defense: " << persen_reduksi
              << "%, Sisa HP: " << hp << "/" << max_hp << ")\n";
+    }
+
+    void gainExp(int amount) {
+        exp += amount;
+        cout << nama << " mendapat " << amount << " exp!\n";
+        if (exp >= max_exp) {
+            levelUp();
+        }
+    }
+
+    void levelUp() {
+        level++;
+        exp = 0;
+        max_exp = level * 100;
+        attack_power += 5;
+        defense += 3;
+        hp += 20;
+        max_hp = hp;
+        cout << "\n⭐ " << nama << " naik level ke " << level << "!\n";
+        cout << "Attack: +" << 5 << ", Defense: +" << 3 << ", HP: +" << 20 << "\n";
     }
 
     // Pure Virtual Function: Wajib ada agar child class bisa meng-override
@@ -265,9 +291,9 @@ int main() {
         cout << "\n--- Turn " << turn << " ---\n";
 
         cout << "\nStatus:\n";
-        cout << p1->getNama() << " - HP: " << p1->getHP() << "/" << p1->getMaxHP() << ", Mana: " << p1->getMana() << "/" << p1->getMaxmana() <<"\n";
-        cout << p2->getNama() << " - HP: " << p2->getHP() << "/" << p2->getMaxHP() << ", Faith: " << p2->getFaith() << "/" << p2->getMaxfaith() <<"\n";
-        cout << p3->getNama() << " - HP: " << p3->getHP() << "/" << p3->getMaxHP() << ", Arrows: "<< p3->getArrows() << "/" << p3->getMaxarrows() << ", Mana: " << p3->getMana() << "/" << p3->getMaxmana() <<"\n";
+        cout << p1->getNama() << " - Level: " << p1->getLevel() << ", HP: " << p1->getHP() << "/" << p1->getMaxHP() << ", Mana: " << p1->getMana() << "/" << p1->getMaxmana() <<"\n";
+        cout << p2->getNama() << " - Level: " << p2->getLevel() << ", HP: " << p2->getHP() << "/" << p2->getMaxHP() << ", Faith: " << p2->getFaith() << "/" << p2->getMaxfaith() <<"\n";
+        cout << p3->getNama() << " - Level: " << p3->getLevel() << ", HP: " << p3->getHP() << "/" << p3->getMaxHP() << ", Arrows: "<< p3->getArrows() << "/" << p3->getMaxarrows() << ", Mana: " << p3->getMana() << "/" << p3->getMaxmana() <<"\n";
         cout << m1->getNama() << " - HP: " << m1->getHP() << "/" << m1->getMaxHP() << "\n";
 
         // Giliran Player
@@ -412,6 +438,10 @@ int main() {
 
         if (!m1->isAlive()) {
             cout << "\n🎉 " << m1->getNama() << " telah dikalahkan!\n";
+            int exp_reward = 50;
+            p1->gainExp(exp_reward);
+            if (p2->isAlive()) p2->gainExp(exp_reward);
+            if (p3->isAlive()) p3->gainExp(exp_reward);
             break;
         }
         
@@ -479,6 +509,10 @@ int main() {
             
             if (!m1->isAlive()) {
                 cout << "\n🎉 " << m1->getNama() << " telah dikalahkan!\n";
+                int exp_reward = 50;
+                p1->gainExp(exp_reward);
+                if (p2->isAlive()) p2->gainExp(exp_reward);
+                if (p3->isAlive()) p3->gainExp(exp_reward);
                 break;
             } 
         }

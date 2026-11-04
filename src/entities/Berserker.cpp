@@ -61,7 +61,7 @@ void Berserker::basicAttack(Entity* target) {
          << "! Damage x" << fixed << setprecision(1)
          << calculateDamageMultiplier() << "\n";
     target->terimaDamage(damage);
-    gainRage(10);
+    gainRage(20);
 }
 
 void Berserker::rageStrike(Entity* target) {
@@ -78,7 +78,7 @@ void Berserker::rageStrike(Entity* target) {
     hp = max(0, hp - self_damage);
     cout << nama << " kehilangan " << self_damage
          << " HP karena Rage Strike. (Sisa HP: " << hp << "/" << max_hp << ")\n";
-    gainRage(20);
+    gainRage(25);
 }
 
 void Berserker::whirlwind(Entity* target) {
@@ -95,7 +95,7 @@ void Berserker::whirlwind(Entity* target) {
     hp = max(0, hp - self_damage);
     cout << nama << " kehilangan " << self_damage
          << " HP karena Whirlwind. (Sisa HP: " << hp << "/" << max_hp << ")\n";
-    gainRage(15);
+    gainRage(20);
 }
 
 void Berserker::updateBerserkMode() {

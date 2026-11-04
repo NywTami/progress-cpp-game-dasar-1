@@ -1,7 +1,11 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
+#include <map>
 #include <string>
+#include <vector>
+#include "StatusEffect.h"
+
 using namespace std;
 
 class Entity {
@@ -14,6 +18,8 @@ protected:
     int level;
     int exp;
     int max_exp;
+    map<string, int> resources;  // Flexible resource system: mana, faith, arrows, etc.
+    vector<StatusEffect> active_effects;
 
 public:
     Entity(string n, int h, int MaxHP, int atk, int def) 
@@ -40,10 +46,19 @@ public:
     void tambahDefense(int amount);
     void resetDefense(int original_defense);
     int getAttackPower() const { return attack_power; }
+    int getOriginalDefense() const { return defense; }
+    int getOriginalAttackPower() const { return attack_power; }
+    int getOriginalMaxHP() const { return max_hp; }
 
     void gainExp(int amount);
-
     void levelUp();
+
+    // Status Effect system
+    void applyEffect(const StatusEffect& effect);
+    void removeEffect(const string& effect_name);
+    void updateEffects();  // Reduce duration, remove expired effects
+    void displayActiveEffects() const;
+    const vector<StatusEffect>& getActiveEffects() const { return active_effects; }
 
     // Pure Virtual Function
     virtual void serang(Entity* target) = 0;

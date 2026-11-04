@@ -67,3 +67,48 @@ void Entity::levelUp() {
     cout << "\n⭐ " << nama << " naik level ke " << level << "!\n";
     cout << "Attack: +" << 5 << ", Defense: +" << 3 << ", HP: +" << 20 << "\n";
 }
+
+void Entity::applyEffect(const StatusEffect& effect) {
+    active_effects.push_back(effect);
+    cout << "\n✨ " << nama << " terkena efek: " << effect.name
+         << " (durasi: " << effect.remaining_turns << " turn)\n";
+}
+
+void Entity::removeEffect(const string& effect_name) {
+    auto it = active_effects.begin();
+    while (it != active_effects.end()) {
+        if (it->name == effect_name) {
+            cout << "\n🚫 " << nama << " efek " << effect_name << " dihilangkan.\n";
+            it = active_effects.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+void Entity::updateEffects() {
+    for (auto& effect : active_effects) {
+        effect.remaining_turns--;
+    }
+
+    auto it = active_effects.begin();
+    while (it != active_effects.end()) {
+        if (it->remaining_turns <= 0) {
+            cout << "\n⏰ " << nama << " efek " << it->name << " berakhir.\n";
+            it = active_effects.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+void Entity::displayActiveEffects() const {
+    if (active_effects.empty()) {
+        cout << "  (tidak ada efek aktif)\n";
+        return;
+    }
+    for (const auto& effect : active_effects) {
+        cout << "  - " << effect.name << " (" << effect.remaining_turns << " turn)\n";
+    }
+}
+

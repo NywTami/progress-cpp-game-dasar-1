@@ -57,3 +57,36 @@ void Support::regenMana(int amount) {
     cout << "\n✨ " << nama << " regenerasi mana +" << amount
          << " (Mana: " << mana << "/" << max_mana << ")\n";
 }
+
+void Support::buffDefense(Entity* target) {
+    const int biaya_mana = 15;
+    const int buff_value = 10;
+
+    if (mana < biaya_mana) {
+        cout << "\n⚠️ " << nama << " tidak memiliki cukup mana untuk Buff Defense! "
+             << "(Mana: " << mana << "/" << max_mana << ")\n";
+        return;
+    }
+
+    mana -= biaya_mana;
+    target->tambahDefense(buff_value);
+    cout << "\n✨ " << nama << " menggunakan Buff Defense pada "
+         << target->getNama() << "! (Sisa Mana: " << mana << "/" << max_mana << ")\n";
+}
+
+void Support::buffAttackPower(Entity* target) {
+    const int biaya_mana = 20;
+    const int buff_percent = 30;  // +30% attack
+
+    if (mana < biaya_mana) {
+        cout << "\n⚠️ " << nama << " tidak memiliki cukup mana untuk Buff Attack Power! "
+             << "(Mana: " << mana << "/" << max_mana << ")\n";
+        return;
+    }
+
+    mana -= biaya_mana;
+    int buff_amount = (target->getAttackPower() * buff_percent) / 100;
+    target->tambahDefense(buff_amount);  // TODO: Need buffAttackPower method in Entity
+    cout << "\n✨ " << nama << " menggunakan Buff Attack Power pada "
+         << target->getNama() << "! (Sisa Mana: " << mana << "/" << max_mana << ")\n";
+}

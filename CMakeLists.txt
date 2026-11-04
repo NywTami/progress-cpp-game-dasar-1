@@ -7,10 +7,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(BattleGame
     src/main.cpp
     src/entities/Entity.cpp
+    src/entities/Support.cpp
     src/entities/Mage.cpp
     src/entities/Knight.cpp
     src/entities/Archer.cpp
     src/entities/Monster.cpp
+    src/Progression.cpp
+    src/HeroRoster.cpp
 )
 
-target_include_directories(BattleGame PRIVATE src/entities)
+target_include_directories(BattleGame PRIVATE src src/entities)

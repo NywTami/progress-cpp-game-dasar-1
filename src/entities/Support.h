@@ -19,6 +19,8 @@ public:
     void basicAttack(Entity* target);
     void heal(Entity* target);
     void massHeal(Entity* p1, Entity* p2, Entity* p3);
+    void buffDefense(Entity* target);
+    void buffAttackPower(Entity* target);
     void regenMana(int amount);
 };
 

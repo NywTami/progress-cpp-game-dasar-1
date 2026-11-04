@@ -39,7 +39,7 @@ public:
     bool isAlive() const { return hp > 0; }
 
     // Metode menerima damage
-    void terimaDamage(int damage);
+    virtual void terimaDamage(int damage);
 
     // Metode healing dan buff
     void pulihkanHP(int amount);

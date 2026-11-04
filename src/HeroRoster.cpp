@@ -1,5 +1,8 @@
 #include "HeroRoster.h"
 #include "entities/Monster.h"
+#include "entities/Summoner.h"
+#include "entities/Hunter.h"
+#include "entities/Berserker.h"
 #include <iostream>
 
 using namespace std;
@@ -24,6 +27,17 @@ Entity* HeroRoster::createHero(int hero_index, const string& custom_name) {
     if (hero_index == 2) {  // Archer
         return new Archer(hero_name, spec.hp, spec.max_hp, spec.attack, spec.defense,
                          10, 10, spec.resource_amount, spec.max_resource);
+    }
+    if (hero_index == 3) {  // Summoner
+        return new Summoner(hero_name, spec.hp, spec.max_hp, spec.attack, spec.defense,
+                           spec.resource_amount, spec.max_resource);
+    }
+    if (hero_index == 4) {  // Hunter
+        return new Hunter(hero_name, spec.hp, spec.max_hp, spec.attack, spec.defense,
+                         10, 10, spec.resource_amount, spec.max_resource);
+    }
+    if (hero_index == 5) {  // Berserker
+        return new Berserker(hero_name, spec.hp, spec.max_hp, spec.attack);
     }
 
     // TODO: New heroes (Summoner, Hunter, Berserker, Paladin, Marksman, Druid, Black Mage)

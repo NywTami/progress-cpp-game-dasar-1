@@ -11,6 +11,7 @@ add_executable(BattleGame
     src/entities/Mage.cpp
     src/entities/Knight.cpp
     src/entities/Archer.cpp
+    src/entities/Berserker.cpp
     src/entities/Monster.cpp
     src/Progression.cpp
     src/HeroRoster.cpp

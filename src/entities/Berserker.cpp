@@ -98,6 +98,22 @@ void Berserker::whirlwind(Entity* target) {
     gainRage(20);
 }
 
+void Berserker::selfHeal(){
+    if (hp>0 && rage >= 30){
+        int heal_amount = max_hp * 10 / 100;
+        pulihkanHP(heal_amount);
+        rage -= 30;
+        cout << "\n💖 " << nama << " menggunakan Self Heal! "
+             << "Memulihkan " << heal_amount << " HP. "
+             << "(Sisa HP: " << hp << "/" << max_hp
+             << ", Rage: " << rage << "/" << max_rage << ")\n";
+    } else if (hp <= 0){
+        cout << "\n❌ " << nama << " tidak bisa menggunakan Self Heal karena sudah mati.\n";
+    } else {
+        cout << "\n❌ " << nama << " tidak memiliki cukup rage untuk menggunakan Self Heal.\n";
+    }
+}
+
 void Berserker::updateBerserkMode() {
     if (berserk_turns_remaining <= 0) {
         return;

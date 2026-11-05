@@ -28,9 +28,10 @@ public:
     void serang(Entity* target) override;
 
     // Skills — tanpa rage cost, pakai self-damage + rage gain
-    void basicAttack(Entity* target);       // self-damage: 0%, rage gain: +10
-    void rageStrike(Entity* target);        // self-damage: 5% maxHP, rage gain: +20
-    void whirlwind(Entity* target);         // self-damage: 4% maxHP, rage gain: +15
+    void basicAttack(Entity* target);       // self-damage: 0%, rage gain: +20
+    void rageStrike(Entity* target);        // self-damage: 5% maxHP, rage gain: +25
+    void whirlwind(Entity* target);         // self-damage: 4% maxHP, rage gain: +20
+    void selfHeal();                        // rage cost - 30, hp + 10%
 
     // Dipanggil di awal/akhir turn Berserker
     void updateBerserkMode();

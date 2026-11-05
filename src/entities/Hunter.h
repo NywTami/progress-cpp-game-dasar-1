@@ -28,6 +28,9 @@ public:
     void powerShot(Entity* target);         // Cost: 20 energy, high damage single
     void beastCompanion(Entity* target);    // Cost: 25 energy, pet assists
     void trackingShot(Entity* target);      // Cost: 15 energy, debuff enemy
+    void focusShot(Entity* target);        // Cost: 30 focus, high damage
+    void disadvantageShot(Entity* target);   // Cost: 20 focus, reduces enemy defense
+    void huntersMark(Entity* target);        // Cost: 25 focus, increases damage taken by enemy
     void regenEnergy(int amount);
     
 };

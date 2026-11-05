@@ -72,6 +72,59 @@ void Hunter::trackingShot(Entity* target) {
     target->applyEffect(debuff);
 }
 
+void Hunter::focusShot(Entity* target) {
+    const int biaya_focus = 30;
+    
+    if (focus < biaya_focus) {
+        cout << "\n⚠️ " << nama << " tidak memiliki cukup focus untuk Focus Shot! "
+             << "(Focus: " << focus << "/" << max_focus << ")\n";
+        return;
+    }
+
+    focus -= biaya_focus;
+    cout << "\n🎯 " << nama << " melepas focus shot pada " << target->getNama() 
+         << "! (Sisa Focus: " << focus << "/" << max_focus << ")\n";
+    
+    int focus_damage = attack_power * 200 / 100;
+    target->terimaDamage(focus_damage);
+}
+
+void Hunter::disadvantageShot(Entity* target) {
+    const int biaya_focus = 20;
+    
+    if (focus < biaya_focus) {
+        cout << "\n⚠️ " << nama << " tidak memiliki cukup focus untuk Disadvantage Shot! "
+             << "(Focus: " << focus << "/" << max_focus << ")\n";
+        return;
+    }
+
+    focus -= biaya_focus;
+    cout << "\n🔻 " << nama << " melepas disadvantage shot pada " << target->getNama() 
+         << "! (Sisa Focus: " << focus << "/" << max_focus << ")\n";
+    
+    // Apply debuff: reduce enemy defense for 3 turns
+    StatusEffect debuff("Disadvantaged", EffectType::Debuff, TargetStat::DefensePoints, 15, 3);
+    target->applyEffect(debuff);
+}
+
+void Hunter::huntersMark(Entity* target) {
+    const int biaya_focus = 25;
+    
+    if (focus < biaya_focus) {
+        cout << "\n⚠️ " << nama << " tidak memiliki cukup focus untuk Hunter's Mark! "
+             << "(Focus: " << focus << "/" << max_focus << ")\n";
+        return;
+    }
+
+    focus -= biaya_focus;
+    cout << "\n🔖 " << nama << " menandai " << target->getNama() 
+         << " dengan Hunter's Mark! (Sisa Focus: " << focus << "/" << max_focus << ")\n";
+    
+    // Apply debuff: increase damage taken by enemy for 4 turns
+    StatusEffect debuff("Marked", EffectType::Debuff, TargetStat::DefensePoints, 20, 4);
+    target->applyEffect(debuff);
+}
+
 void Hunter::regenEnergy(int amount) {
     energy += amount;
     if (energy > max_energy) {

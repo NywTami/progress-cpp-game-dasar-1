@@ -15,13 +15,13 @@ public:
     int getMana() const override { return mana; }
     int getMaxMana() const { return max_mana; }
 
-    void serang(Entity* target) override;
-    void basicAttack(Entity* target);
-    void heal(Entity* target);
-    void massHeal(Entity* p1, Entity* p2, Entity* p3);
-    void buffDefense(Entity* target);
-    void buffAttackPower(Entity* target);
-    void regenMana(int amount);
+    void serang(Entity* target) override; 
+    void basicAttack(Entity* target); //1
+    void heal(Entity* target); //2
+    void massHeal(Entity* p1, Entity* p2, Entity* p3); //3
+    void buffDefense(Entity* target); //4
+    void buffAttackPower(Entity* target); //5
+    void regenMana(int amount); //6
 };
 
 #endif

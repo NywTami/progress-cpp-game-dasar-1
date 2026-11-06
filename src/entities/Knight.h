@@ -16,11 +16,11 @@ public:
         : Entity(n, h, MaxHP, atk, def), faith(f), max_faith(max_faith) {}
 
     void serang(Entity* target) override;
-    void regenFaith();
-    void shieldBlock();
-    void powerStrike(Entity* target);
-    void ultimateCharge(Entity* target);
-    void blessDefense(Entity* target);
+    void regenFaith(); //1
+    void shieldBlock(); //2
+    void powerStrike(Entity* target); //3
+    void ultimateCharge(Entity* target); //4
+    void blessDefense(Entity* target); //5
 };
 
 #endif

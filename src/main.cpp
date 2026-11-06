@@ -41,9 +41,11 @@ void executeHeroTurn(Entity* hero, Entity* monster, vector<Entity*>& active_rost
         cout << "2. Heal (10 mana)\n";
         cout << "3. Mass Heal (25 mana)\n";
         cout << "4. Regen Mana\n";
+        cout << "5. Buff Defense (15 mana)\n";
+        cout << "6. Buff Attack Power (15 mana)\n";
         cout << "Pilihan: ";
         
-        if (!(cin >> aksi) || aksi < 1 || aksi > 4) {
+        if (!(cin >> aksi) || aksi < 1 || aksi > 6) {
             cin.clear();
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             cout << "❌ Aksi tidak valid. Giliran terlewat.\n";

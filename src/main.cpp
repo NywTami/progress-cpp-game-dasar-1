@@ -123,9 +123,15 @@ void executeHeroTurn(Entity* hero, Entity* monster, vector<Entity*>& active_rost
         cout << "2. Basic Attack (tanpa panah)\n";
         cout << "3. Special Attack (20 mana, 1 panah)\n";
         cout << "4. Reload Arrows\n";
+        cout << "5. Fire Arrow (10 mana)\n";
+        cout << "6. Lightning Arrow (15 mana)\n";
+        cout << "7. Poison Arrow (15 mana)\n";
+        cout << "8. Multi Shot (25 mana, 3 panah)\n";
+        cout << "9. Rapid Fire (30 mana, 5 panah)\n";
+        cout << "10. Regen Mana\n";
         cout << "Pilihan: ";
         
-        if (!(cin >> aksi) || aksi < 1 || aksi > 4) {
+        if (!(cin >> aksi) || aksi < 1 || aksi > 10) {
             cin.clear();
             cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             cout << "❌ Aksi tidak valid. Giliran terlewat.\n";
@@ -143,6 +149,24 @@ void executeHeroTurn(Entity* hero, Entity* monster, vector<Entity*>& active_rost
             valid = true;
         } else if (aksi == 4) {
             archer->reloadArrows();
+            valid = true;
+        } else if (aksi == 5) {
+            archer->fireArrow(monster);
+            valid = true;
+        } else if (aksi == 6) {
+            archer->lightningArrow(monster);
+            valid = true;
+        } else if (aksi == 7) {
+            archer->poisonArrow(monster);
+            valid = true;
+        } else if (aksi == 8) {
+            archer->multiShot(monster);
+            valid = true;
+        } else if (aksi == 9) {
+            archer->rapidFire(monster);
+            valid = true;
+        } else if (aksi == 10) {
+            archer->regenMana();
             valid = true;
         }
     } else if (mage) {

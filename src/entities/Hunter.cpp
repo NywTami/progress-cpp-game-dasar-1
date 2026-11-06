@@ -47,8 +47,18 @@ void Hunter::beastCompanion(Entity* target) {
     cout << "\n🐺 " << nama << " memanggil beast companion untuk menyerang " << target->getNama() 
          << "! (Sisa Energy: " << energy << "/" << max_energy << ")\n";
     
+    // Deal damage
     int beast_damage = attack_power * 80 / 100;
     target->terimaDamage(beast_damage);
+    
+    // Add 1 stack ONLY if Prey is already active
+    if (target->getPreyStackCount() > 0) {
+        StatusPreyMark stack_bonus("Prey", EffectType::Debuff, TargetStat::DefensePercent, 1, 10, 0, true);
+        target->applyPreyMark(stack_bonus);
+        cout << "  ➕ Prey stacks +1\n";
+    } else {
+        cout << "  ℹ️ Target tidak memiliki Prey Mark. Stacks tidak ditambah.\n";
+    }
 }
 
 void Hunter::trackingShot(Entity* target) {
@@ -64,65 +74,61 @@ void Hunter::trackingShot(Entity* target) {
     cout << "\n🎯 " << nama << " melepas tracking shot pada " << target->getNama() 
          << "! (Sisa Energy: " << energy << "/" << max_energy << ")\n";
     
-    int tracking_damage = attack_power * 100 / 100;
+    int tracking_damage = attack_power * 120 / 100;
     target->terimaDamage(tracking_damage);
-    
-    // Apply debuff: reduce enemy attack power for 2 turns
-    StatusEffect debuff("Tracked", EffectType::Debuff, TargetStat::AttackPercent, 20, 2);
-    target->applyEffect(debuff);
 }
 
-void Hunter::focusShot(Entity* target) {
-    const int biaya_focus = 30;
-    
-    if (focus < biaya_focus) {
-        cout << "\n⚠️ " << nama << " tidak memiliki cukup focus untuk Focus Shot! "
-             << "(Focus: " << focus << "/" << max_focus << ")\n";
-        return;
-    }
-
-    focus -= biaya_focus;
-    cout << "\n🎯 " << nama << " melepas focus shot pada " << target->getNama() 
-         << "! (Sisa Focus: " << focus << "/" << max_focus << ")\n";
-    
-    int focus_damage = attack_power * 200 / 100;
-    target->terimaDamage(focus_damage);
-}
 
 void Hunter::disadvantageShot(Entity* target) {
-    const int biaya_focus = 20;
+    const int biaya_energy = 20;
     
-    if (focus < biaya_focus) {
-        cout << "\n⚠️ " << nama << " tidak memiliki cukup focus untuk Disadvantage Shot! "
-             << "(Focus: " << focus << "/" << max_focus << ")\n";
+    if (energy < biaya_energy) {
+        cout << "\n⚠️ " << nama << " tidak memiliki cukup energy untuk Disadvantage Shot! "
+             << "(Energy: " << energy << "/" << max_energy << ")\n";
         return;
     }
 
-    focus -= biaya_focus;
+    energy -= biaya_energy;
     cout << "\n🔻 " << nama << " melepas disadvantage shot pada " << target->getNama() 
-         << "! (Sisa Focus: " << focus << "/" << max_focus << ")\n";
+         << "! (Sisa Energy: " << energy << "/" << max_energy << ")\n";
     
-    // Apply debuff: reduce enemy defense for 3 turns
-    StatusEffect debuff("Disadvantaged", EffectType::Debuff, TargetStat::DefensePoints, 15, 3);
-    target->applyEffect(debuff);
+    // Deal damage
+    int damage = attack_power * 130 / 100;
+    target->terimaDamage(damage);
+    
+    // Add 2 stacks ONLY if Prey is already active
+    if (target->getPreyStackCount() > 0) {
+        StatusPreyMark stack_bonus("Prey", EffectType::Debuff, TargetStat::DefensePercent, 2, 10, 0, true);
+        target->applyPreyMark(stack_bonus);
+        cout << "  ➕ Prey stacks +2\n";
+    } else {
+        cout << "  ℹ️ Target tidak memiliki Prey Mark. Stacks tidak ditambah.\n";
+    }
 }
 
 void Hunter::huntersMark(Entity* target) {
-    const int biaya_focus = 25;
+    const int biaya_energy = 10;
     
-    if (focus < biaya_focus) {
-        cout << "\n⚠️ " << nama << " tidak memiliki cukup focus untuk Hunter's Mark! "
-             << "(Focus: " << focus << "/" << max_focus << ")\n";
+    if (energy < biaya_energy) {
+        cout << "\n⚠️ " << nama << " tidak memiliki cukup energy untuk Hunter's Mark! "
+             << "(Energy: " << energy << "/" << max_energy << ")\n";
         return;
     }
 
-    focus -= biaya_focus;
-    cout << "\n🔖 " << nama << " menandai " << target->getNama() 
-         << " dengan Hunter's Mark! (Sisa Focus: " << focus << "/" << max_focus << ")\n";
+    energy -= biaya_energy;
+    cout << "\n🎯 " << nama << " melepas Hunter's Mark pada " << target->getNama() 
+         << "! (Sisa Energy: " << energy << "/" << max_energy << ")\n";
     
-    // Apply debuff: increase damage taken by enemy for 4 turns
-    StatusEffect debuff("Marked", EffectType::Debuff, TargetStat::DefensePoints, 20, 4);
-    target->applyEffect(debuff);
+    // Check if target already has Prey Mark
+    if (target->getPreyStackCount() == 0) {
+        // First application: 5 stacks
+        StatusPreyMark prey_mark("Prey", EffectType::Debuff, TargetStat::DefensePercent, 5, 10, 4, true);
+        target->applyPreyMark(prey_mark);
+    } else {
+        // Already has Prey: add 1 stack and reset duration
+        StatusPreyMark prey_refresh("Prey", EffectType::Debuff, TargetStat::DefensePercent, 1, 10, 4, true);
+        target->applyPreyMark(prey_refresh);
+    }
 }
 
 void Hunter::regenEnergy(int amount) {

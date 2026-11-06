@@ -1,8 +1,14 @@
 #include "Entity.h"
 #include <iostream>
+#include <algorithm>
 
 void Entity::terimaDamage(int damage) {
     double persen_reduksi = defense / 10.0;
+    
+    // Prey lowers target defense by 6 percentage points per stack.
+    if (active_prey_mark) {
+        persen_reduksi -= active_prey_mark->stacks * 6.0;
+    }
 
     if (persen_reduksi > 100.0) {
         persen_reduksi = 100.0;
@@ -100,6 +106,8 @@ void Entity::updateEffects() {
             ++it;
         }
     }
+
+    updatePreyMarks();
 }
 
 void Entity::displayActiveEffects() const {
@@ -110,5 +118,62 @@ void Entity::displayActiveEffects() const {
     for (const auto& effect : active_effects) {
         cout << "  - " << effect.name << " (" << effect.remaining_turns << " turn)\n";
     }
+}
+
+void Entity::applyPreyMark(const StatusPreyMark& prey_mark) {
+    if (!active_prey_mark) {
+        // First time: apply with initial stacks
+        active_prey_mark = new StatusPreyMark(prey_mark);
+        cout << "\n🎯 " << nama << " terkena Prey Mark! (" << active_prey_mark->stacks 
+             << " stacks, -" << (active_prey_mark->stacks * 6) << "% DEF, durasi: " 
+             << active_prey_mark->duration << " round)\n";
+    } else {
+        // Existing Prey: add stacks, refresh duration only for duration-bearing skills.
+        int old_stacks = active_prey_mark->stacks;
+        active_prey_mark->stacks = std::min(
+            active_prey_mark->stacks + prey_mark.stacks,
+            active_prey_mark->max_stacks);
+        if (prey_mark.duration > 0) {
+            active_prey_mark->duration = prey_mark.duration;
+        }
+
+        cout << "\n🎯 " << nama << " Prey Mark diperbarui! (" << old_stacks << " -> "
+             << active_prey_mark->stacks << " stacks, -" << (active_prey_mark->stacks * 6)
+             << "% DEF";
+        if (prey_mark.duration > 0) {
+            cout << ", durasi reset: " << active_prey_mark->duration << " round";
+        }
+        cout << ")\n";
+    }
+}
+
+void Entity::removePreyMark(const string& mark_name) {
+    if (active_prey_mark && active_prey_mark->name == mark_name) {
+        cout << "\n🚫 " << nama << " Prey Mark dihilangkan.\n";
+        delete active_prey_mark;
+        active_prey_mark = nullptr;
+    }
+}
+
+void Entity::updatePreyMarks() {
+    if (active_prey_mark) {
+        active_prey_mark->duration--;
+        if (active_prey_mark->duration <= 0) {
+            cout << "\n⏰ " << nama << " Prey Mark berakhir.\n";
+            delete active_prey_mark;
+            active_prey_mark = nullptr;
+        }
+    }
+}
+
+void Entity::displayActivePreyMarks() const {
+    if (!active_prey_mark) {
+        cout << "  (tidak ada Prey Mark)\n";
+        return;
+    }
+    cout << "  - " << active_prey_mark->name << " (" << active_prey_mark->stacks 
+         << "/" << active_prey_mark->max_stacks << " stacks, -" 
+         << (active_prey_mark->stacks * 6) << "% DEF, " 
+         << active_prey_mark->duration << " round)\n";
 }
 

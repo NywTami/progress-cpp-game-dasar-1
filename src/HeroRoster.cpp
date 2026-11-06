@@ -18,7 +18,7 @@ Entity* HeroRoster::createHero(int hero_index, const string& custom_name) {
     // Existing heroes with specific constructors
     if (hero_index == 0) {  // Support
         return new Support(hero_name, spec.hp, spec.max_hp, spec.attack, spec.defense,
-                          spec.resource_amount, spec.max_resource);
+                           spec.resource_amount, spec.max_resource);
     }
     if (hero_index == 1) {  // Knight
         return new Knight(hero_name, spec.hp, spec.max_hp, spec.attack, spec.defense,
@@ -34,7 +34,7 @@ Entity* HeroRoster::createHero(int hero_index, const string& custom_name) {
     }
     if (hero_index == 4) {  // Hunter
         return new Hunter(hero_name, spec.hp, spec.max_hp, spec.attack, spec.defense,
-                         10, 10, spec.resource_amount, spec.max_resource);
+                         spec.resource_amount, spec.max_resource);
     }
     if (hero_index == 5) {  // Berserker
         return new Berserker(hero_name, spec.hp, spec.max_hp, spec.attack);

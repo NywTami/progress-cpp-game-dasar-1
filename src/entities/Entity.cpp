@@ -49,6 +49,12 @@ void Entity::tambahDefense(int amount) {
          << "! (Defense: " << defense << ")\n";
 }
 
+void Entity::tambahAttackPower(int amount) {
+    attack_power += amount;
+    cout << nama << " mendapat buff attack +" << amount
+         << "! (Attack: " << attack_power << ")\n";
+}
+
 void Entity::resetDefense(int original_defense) {
     defense = original_defense;
     cout << nama << " buff defense hilang. (Defense: " << defense << ")\n";

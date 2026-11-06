@@ -1,446 +1,426 @@
 ﻿#include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <vector>
+#include <algorithm>
+#include <limits>
+#include "Progression.h"
 #include "entities/Support.h"
 #include "entities/Knight.h"
 #include "entities/Archer.h"
+#include "entities/Mage.h"
+#include "entities/Hunter.h"
+#include "entities/Berserker.h"
 #include "entities/Monster.h"
 
 using namespace std;
 
+// Forward declarations
+void executeHeroTurn(Entity* hero, Entity* monster, vector<Entity*>& active_roster);
+void executeMonsterTurn(Entity* monster, vector<Entity*>& active_roster);
+void displayBattleStatus(const vector<Entity*>& active_roster, Entity* monster);
+
+void executeHeroTurn(Entity* hero, Entity* monster, vector<Entity*>& active_roster) {
+    cout << "\n⚔️  Giliran " << hero->getNama() << "\n";
+    cout << "HP: " << hero->getHP() << "/" << hero->getMaxHP() << "\n";
+    
+    // Determine hero type and display appropriate menu
+    Support* support = dynamic_cast<Support*>(hero);
+    Knight* knight = dynamic_cast<Knight*>(hero);
+    Archer* archer = dynamic_cast<Archer*>(hero);
+    Mage* mage = dynamic_cast<Mage*>(hero);
+    Hunter* hunter = dynamic_cast<Hunter*>(hero);
+    Berserker* berserker = dynamic_cast<Berserker*>(hero);
+    
+    int aksi = -1;
+    bool valid = false;
+    
+    if (support) {
+        cout << "Mana: " << support->getMana() << "/" << support->getMaxMana() << "\n";
+        cout << "\n1. Basic Attack\n";
+        cout << "2. Heal (10 mana)\n";
+        cout << "3. Mass Heal (25 mana)\n";
+        cout << "4. Regen Mana\n";
+        cout << "Pilihan: ";
+        
+        if (!(cin >> aksi) || aksi < 1 || aksi > 4) {
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            cout << "❌ Aksi tidak valid. Giliran terlewat.\n";
+            return;
+        }
+        
+        if (aksi == 1) {
+            support->serang(monster);
+            valid = true;
+        } else if (aksi == 2) {
+            cout << "\nPilih target heal (1-" << active_roster.size() << "): ";
+            int target_idx;
+            if (cin >> target_idx && target_idx >= 1 && target_idx <= active_roster.size()) {
+                support->heal(active_roster[target_idx - 1]);
+                valid = true;
+            } else {
+                cin.clear();
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                cout << "❌ Target tidak valid.\n";
+            }
+        } else if (aksi == 3) {
+            support->massHeal(active_roster[0], active_roster.size() > 1 ? active_roster[1] : nullptr, 
+                            active_roster.size() > 2 ? active_roster[2] : nullptr);
+            valid = true;
+        } else if (aksi == 4) {
+            support->regenMana(15);
+            valid = true;
+        }
+    } else if (knight) {
+        cout << "Faith: " << knight->getFaith() << "/" << knight->getMaxfaith() << "\n";
+        cout << "\n1. Basic Attack\n";
+        cout << "2. Power Strike\n";
+        cout << "3. Ultimate Charge\n";
+        cout << "4. Shield Block (20 faith)\n";
+        cout << "5. Regen Faith\n";
+        cout << "6. Bless Defense (15 faith)\n";
+        cout << "Pilihan: ";
+        
+        if (!(cin >> aksi) || aksi < 1 || aksi > 6) {
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            cout << "❌ Aksi tidak valid. Giliran terlewat.\n";
+            return;
+        }
+        
+        if (aksi == 1) {
+            knight->serang(monster);
+            valid = true;
+        } else if (aksi == 2) {
+            knight->powerStrike(monster);
+            valid = true;
+        } else if (aksi == 3) {
+            knight->ultimateCharge(monster);
+            valid = true;
+        } else if (aksi == 4) {
+            knight->shieldBlock();
+            valid = true;
+        } else if (aksi == 5) {
+            knight->regenFaith();
+            valid = true;
+        } else if (aksi == 6) {
+            cout << "\nPilih target bless (1-" << active_roster.size() << "): ";
+            int target_idx;
+            if (cin >> target_idx && target_idx >= 1 && target_idx <= active_roster.size()) {
+                knight->blessDefense(active_roster[target_idx - 1]);
+                valid = true;
+            } else {
+                cin.clear();
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                cout << "❌ Target tidak valid.\n";
+            }
+        }
+    } else if (archer) {
+        cout << "Arrows: " << archer->getArrows() << "/" << archer->getMaxarrows() 
+             << ", Mana: " << archer->getMana() << "/" << archer->getMaxmana() << "\n";
+        cout << "\n1. Basic Attack\n";
+        cout << "2. Basic Attack (tanpa panah)\n";
+        cout << "3. Special Attack (20 mana, 1 panah)\n";
+        cout << "4. Reload Arrows\n";
+        cout << "Pilihan: ";
+        
+        if (!(cin >> aksi) || aksi < 1 || aksi > 4) {
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            cout << "❌ Aksi tidak valid. Giliran terlewat.\n";
+            return;
+        }
+        
+        if (aksi == 1) {
+            archer->serang(monster);
+            valid = true;
+        } else if (aksi == 2) {
+            archer->basicAttack(monster);
+            valid = true;
+        } else if (aksi == 3) {
+            archer->specialAttack(monster);
+            valid = true;
+        } else if (aksi == 4) {
+            archer->reloadArrows();
+            valid = true;
+        }
+    } else if (mage) {
+        cout << "Mana: " << mage->getMana() << "/" << mage->getMaxmana() << "\n";
+        cout << "\n1. Basic Attack\n";
+        cout << "2. Fireball (15 mana)\n";
+        cout << "3. Ultimate Burst (30 mana)\n";
+        cout << "4. Regen Mana\n";
+        cout << "Pilihan: ";
+        
+        if (!(cin >> aksi) || aksi < 1 || aksi > 4) {
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            cout << "❌ Aksi tidak valid. Giliran terlewat.\n";
+            return;
+        }
+        
+        if (aksi == 1) {
+            mage->serang(monster);
+            valid = true;
+        } else if (aksi == 2) {
+            mage->fireball(monster);
+            valid = true;
+        } else if (aksi == 3) {
+            mage->ultimateBurst(monster);
+            valid = true;
+        } else if (aksi == 4) {
+            mage->regenMana(20);
+            valid = true;
+        }
+    } else if (hunter) {
+        cout << "Energy: " << hunter->getEnergy() << "/" << hunter->getMaxEnergy() << "\n";
+        cout << "\n1. Basic Attack\n";
+        cout << "2. Power Shot (20 energy)\n";
+        cout << "3. Beast Companion (25 energy)\n";
+        cout << "4. Tracking Shot (15 energy)\n";
+        cout << "5. Disadvantage Shot (20 energy)\n";
+        cout << "6. Hunter's Mark (10 energy)\n";
+        cout << "7. Regen Energy\n";
+        cout << "Pilihan: ";
+        
+        if (!(cin >> aksi) || aksi < 1 || aksi > 7) {
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            cout << "❌ Aksi tidak valid. Giliran terlewat.\n";
+            return;
+        }
+        
+        if (aksi == 1) {
+            hunter->serang(monster);
+            valid = true;
+        } else if (aksi == 2) {
+            if (hunter->getEnergy() < 20) {
+                cout << "❌ Energy tidak cukup. Pilih Regen Energy atau skill lain.\n";
+                return;
+            }
+            hunter->powerShot(monster);
+            valid = true;
+        } else if (aksi == 3) {
+            if (hunter->getEnergy() < 25) {
+                cout << "❌ Energy tidak cukup. Pilih Regen Energy atau skill lain.\n";
+                return;
+            }
+            hunter->beastCompanion(monster);
+            valid = true;
+        } else if (aksi == 4) {
+            if (hunter->getEnergy() < 15) {
+                cout << "❌ Energy tidak cukup. Pilih Regen Energy atau skill lain.\n";
+                return;
+            }
+            hunter->trackingShot(monster);
+            valid = true;
+        } else if (aksi == 5) {
+            if (hunter->getEnergy() < 20) {
+                cout << "❌ Energy tidak cukup. Pilih Regen Energy atau skill lain.\n";
+                return;
+            }
+            hunter->disadvantageShot(monster);
+            valid = true;
+        } else if (aksi == 6) {
+            if (hunter->getEnergy() < 10) {
+                cout << "❌ Energy tidak cukup. Pilih Regen Energy atau skill lain.\n";
+                return;
+            }
+            hunter->huntersMark(monster);
+            valid = true;
+        } else if (aksi == 7) {
+            hunter->regenEnergy(20);
+            valid = true;
+        }
+    } else if (berserker) {
+        cout << "Rage: " << berserker->getRage() << "/" << berserker->getMaxRage() << "\n";
+        cout << "\n1. Basic Attack\n";
+        cout << "2. Rage Strike\n";
+        cout << "3. Whirlwind\n";
+        cout << "4. Self Heal\n";
+        cout << "Pilihan: ";
+        
+        if (!(cin >> aksi) || aksi < 1 || aksi > 4) {
+            cin.clear();
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            cout << "❌ Aksi tidak valid. Giliran terlewat.\n";
+            return;
+        }
+        
+        if (aksi == 1) {
+            berserker->serang(monster);
+            valid = true;
+        } else if (aksi == 2) {
+            berserker->rageStrike(monster);
+            valid = true;
+        } else if (aksi == 3) {
+            berserker->whirlwind(monster);
+            valid = true;
+        } else if (aksi == 4) {
+            berserker->selfHeal();
+            valid = true;
+        }
+    }
+    
+    if (!valid) {
+        cout << "❌ Aksi tidak valid. Giliran terlewat.\n";
+    }
+}
+
+void executeMonsterTurn(Entity* monster, vector<Entity*>& active_roster) {
+    if (!monster->isAlive() || active_roster.empty()) return;
+    
+    cout << "\n👹 Giliran Monster: " << monster->getNama() << "\n";
+    
+    // AI: random target dari hero yang masih hidup
+    vector<Entity*> alive_heroes;
+    for (auto hero : active_roster) {
+        if (hero->isAlive()) {
+            alive_heroes.push_back(hero);
+        }
+    }
+    
+    if (!alive_heroes.empty()) {
+        int target_idx = rand() % alive_heroes.size();
+        monster->serang(alive_heroes[target_idx]);
+    }
+}
+
+void displayBattleStatus(const vector<Entity*>& active_roster, Entity* monster) {
+    cout << "\n--- Status ---\n";
+    for (size_t i = 0; i < active_roster.size(); i++) {
+        Entity* hero = active_roster[i];
+        if (!hero) continue;
+        
+        cout << (i + 1) << ". " << hero->getNama() 
+             << " - HP: " << hero->getHP() << "/" << hero->getMaxHP();
+        
+        Support* support = dynamic_cast<Support*>(hero);
+        Knight* knight = dynamic_cast<Knight*>(hero);
+        Archer* archer = dynamic_cast<Archer*>(hero);
+        Mage* mage = dynamic_cast<Mage*>(hero);
+        Hunter* hunter = dynamic_cast<Hunter*>(hero);
+        Berserker* berserker = dynamic_cast<Berserker*>(hero);
+        
+        if (support) cout << " | Mana: " << support->getMana() << "/" << support->getMaxMana();
+        else if (knight) cout << " | Faith: " << knight->getFaith() << "/" << knight->getMaxfaith();
+        else if (archer) cout << " | Arrows: " << archer->getArrows() << "/" << archer->getMaxarrows();
+        else if (mage) cout << " | Mana: " << mage->getMana() << "/" << mage->getMaxmana();
+        else if (hunter) cout << " | Energy: " << hunter->getEnergy() << "/" << hunter->getMaxEnergy();
+        else if (berserker) cout << " | Rage: " << berserker->getRage() << "/" << berserker->getMaxRage();
+        
+        if (hero->getPreyStackCount() > 0) {
+            cout << " | 🎯 Prey: " << hero->getPreyStackCount() << "/10";
+        }
+        
+        cout << "\n";
+    }
+    
+    cout << "Monster: " << monster->getNama() << " - HP: " << monster->getHP() << "/" << monster->getMaxHP();
+    if (monster->getPreyStackCount() > 0) {
+        cout << " | 🎯 Prey: " << monster->getPreyStackCount() << "/10";
+    }
+    cout << "\n";
+}
+
 int main() {
     srand(time(0));
-
-    string nama_support, nama_knight, nama_archer, nama_monster;
-
-    cout << "===============================================================================================\n";
-    cout << "==========               Selamat datang di Game Pertarungan Sederhana!               ==========\n";
-    cout << "===============================================================================================\n";
-    cout << endl;
-    cout << "================================== Pembuatan Karakter =========================================\n";
-    cout << "Masukkan nama Support: ";
-    cin >> nama_support;
-
-    cout << "===============================================================================================\n";
-
-    cout << "Masukkan nama Knight: ";
-    cin >> nama_knight;
-
-    cout << "===============================================================================================\n";
     
-    cout << "Masukkan nama Archer: ";
-    cin >> nama_archer;
-
     cout << "===============================================================================================\n";
-
-    cout << "Masukkan nama Monster: ";
-    cin >> nama_monster;
-
-    cout << "===============================================================================================\n";
-
-    //Support(nama, hp, max_hp, attack_power, defense, mana, max_mana);
-    //Knight(nama, hp, max_hp, attack_power, defense, faith, max_faith);
-    //Archer(nama, hp, max_hp, attack_power, defense ,arrows, max_arrows, mana, max_mana);
-    //monster(nama,hp, max_hp, attack_power, defense)
-    Support* p1 = new Support (nama_support, 100, 100, 20, 10, 50, 50);
-    Knight* p2 = new Knight (nama_knight, 150, 150, 25, 15, 60, 60);
-    Archer* p3 = new Archer (nama_archer, 80, 80, 180, 10, 10, 10, 60, 60);
-    Monster* m1 = new Monster (nama_monster, 1200, 1200, 30, 12);
-
-    cout << "=== BATTLE START: " << p1->getNama() << "|"<< p2->getNama() << "|" << p3->getNama() << " VS " << m1->getNama() << " ===\n";
-
-    // Loop Pertarungan
+    cout << "==========               Selamat datang di Game Pertarungan!               ==========\n";
+    cout << "===============================================================================================\n\n";
+    
+    // Hero Selection
+    vector<Entity*> active_roster = Progression::displayHeroSelectionMenu();
+    
+    if (active_roster.size() != 3) {
+        cout << "❌ Gagal membuat 3 hero. Game dihentikan.\n";
+        for (auto hero : active_roster) delete hero;
+        return 1;
+    }
+    
+    // Create monster
+    Monster* monster = new Monster("Goblin Boss", 300, 300, 35, 15);
+    
+    cout << "\n=== PERTARUNGAN DIMULAI ===\n";
+    cout << "Hero 0: " << active_roster[0]->getNama() << "\n";
+    cout << "Hero 1: " << active_roster[1]->getNama() << "\n";
+    cout << "Hero 2: " << active_roster[2]->getNama() << "\n";
+    cout << "VS\n";
+    cout << "Monster: " << monster->getNama() << "\n";
+    cout << "============================\n\n";
+    
     int turn = 1;
-    while ((p1->isAlive() || p2->isAlive() || p3->isAlive()) && m1->isAlive()) {
+    while (true) {
         cout << "\n--- Turn " << turn << " ---\n";
-
-        cout << "\nStatus:\n";
-        cout << p1->getNama() << " - Level: " << p1->getLevel() << ", HP: " << p1->getHP() << "/" << p1->getMaxHP() << ", Mana: " << p1->getMana() << "/" << p1->getMaxMana() <<"\n";
-        cout << p2->getNama() << " - Level: " << p2->getLevel() << ", HP: " << p2->getHP() << "/" << p2->getMaxHP() << ", Faith: " << p2->getFaith() << "/" << p2->getMaxfaith() <<"\n";
-        cout << p3->getNama() << " - Level: " << p3->getLevel() << ", HP: " << p3->getHP() << "/" << p3->getMaxHP() << ", Arrows: "<< p3->getArrows() << "/" << p3->getMaxarrows() << ", Mana: " << p3->getMana() << "/" << p3->getMaxmana() <<"\n";
-        cout << m1->getNama() << " - HP: " << m1->getHP() << "/" << m1->getMaxHP() << "\n";
-
-        // Giliran Player
-        int pilihan_pemain;
-        cout << "\nPilih Hero:\n";
-        cout << "1. " << p1->getNama() << "\n";
-        cout << "2. " << p2->getNama() << "\n";
-        cout << "3. " << p3->getNama() << "\n";
-        cout << "Pilihan: ";
-        cin >> pilihan_pemain;
-
-        if (pilihan_pemain == 1 && !p1->isAlive()) {
-            cout << p1->getNama() << " sudah gugur. Pilih hero lain.\n";
-            continue;
-        }
-
-        if (pilihan_pemain == 2 && !p2->isAlive()) {
-            cout << p2->getNama() << " sudah gugur. Pilih hero lain.\n";
-            continue;
-        }
-        if (pilihan_pemain == 3 && !p3->isAlive()) {
-            cout << p3->getNama() << " sudah gugur. Pilih hero lain.\n";
-            continue;
-        }
-        Entity* pemain_pertama = nullptr;
-        Entity* pemain_kedua = nullptr;
-
-        if (pilihan_pemain == 1) {
-            pemain_pertama = p1;
-            
-            int pilihan_kedua;
-            cout << "\nPilih Hero Kedua:\n";
-            cout << "2. " << p2->getNama() << "\n";
-            cout << "3. " << p3->getNama() << "\n";
-            cout << "Pilihan: ";
-            cin >> pilihan_kedua;
-
-            if (pilihan_kedua == 2 && p2->isAlive()) {
-                pemain_kedua = p2;
-            } else if (pilihan_kedua == 3 && p3->isAlive()) {
-                pemain_kedua = p3;
-            } else {
-                cout << "Pilihan hero tidak valid.\n";
-                continue;
-            }
-        } else if (pilihan_pemain == 2) {
-            pemain_pertama = p2;
-            int pilihan_kedua;
-            cout << "\nPilih Hero Kedua:\n";
-            cout << "1. " << p1->getNama() << "\n";
-            cout << "3. " << p3->getNama() << "\n";
-            cout << "Pilihan: ";
-            cin >> pilihan_kedua;
-
-            if (pilihan_kedua == 1 && p1->isAlive()) {
-                pemain_kedua = p1;
-            } else if (pilihan_kedua == 3 && p3->isAlive()) {
-                pemain_kedua = p3;
-            } else {
-                cout << "Pilihan hero tidak valid.\n";
-                continue;
-            }
-        } else if (pilihan_pemain == 3) {
-            pemain_pertama = p3;
-            int pilihan_kedua;
-            cout << "\nPilih Hero Kedua:\n";
-            cout << "1. " << p1->getNama() << "\n";
-            cout << "2. " << p2->getNama() << "\n";
-            cout << "Pilihan: ";
-            cin >> pilihan_kedua;
-
-            if (pilihan_kedua == 1 && p1->isAlive()) {
-                pemain_kedua = p1;
-            } else if (pilihan_kedua == 2 && p2->isAlive()) {
-                pemain_kedua = p2;
-            } else {
-                cout << "Pilihan hero tidak valid.\n";
-                continue;
-            }
-        }
-
-        int aksi;
-        if (pemain_pertama == p1) {
-            cout << "\n" << p1->getNama() << " - Pilih aksi:\n";
-            cout << "1. Serangan biasa\n";
-            cout << "2. Heal (butuh 10 mana)\n";
-            cout << "3. Mass Heal (butuh 25 mana)\n";
-            cout << "4. Regen Mana\n";
-            cout << "Pilihan: ";
-            cin >> aksi;
-
-            if (aksi == 1) {
-                p1->serang(m1);
-            } else if (aksi == 2) {
-                int pilihan_target;
-                cout << "\nPilih target untuk Heal:\n";
-                cout << "1. " << p1->getNama() << "\n";
-                cout << "2. " << p2->getNama() << "\n";
-                cout << "3. " << p3->getNama() << "\n";
-                cout << "Pilihan: ";
-                cin >> pilihan_target;
-                
-                if (pilihan_target == 1) {
-                    p1->heal(p1);
-                } else if (pilihan_target == 2) {
-                    p1->heal(p2);
-                } else if (pilihan_target == 3) {
-                    p1->heal(p3);
-                }
-            } else if (aksi == 3) {
-                p1->massHeal(p1, p2, p3);
-            } else if (aksi == 4) {
-                p1->regenMana(15);
-            } else {
-                cout << "Pilihan tidak valid. Giliran terlewat.\n";
-            }
-        } else if (pemain_pertama == p2) {
-            cout << "\n" << p2->getNama() << " - Pilih aksi:\n";
-            cout << "1. Serangan biasa\n";
-            cout << "2. powerStrike\n";
-            cout << "3. ultimateCharge\n";
-            cout << "4. Shield Block (butuh 20 Faith)\n";
-            cout << "5. Regen Faith\n";
-            cout << "6. Bless Defense (butuh 15 Faith)\n";
-            cout << "Pilihan: ";
-            cin >> aksi;
-
-            if (aksi == 1) {
-                p2->serang(m1);
-            } else if (aksi == 2) {
-                p2->powerStrike(m1);
-            } else if (aksi == 3) {
-                p2->ultimateCharge(m1);
-            } else if (aksi == 4) {
-                p2->shieldBlock();
-            } else if (aksi == 5) {
-                p2->regenFaith();
-            } else if (aksi == 6) {
-                int pilihan_target;
-                cout << "\nPilih target untuk Bless Defense:\n";
-                cout << "1. " << p1->getNama() << "\n";
-                cout << "2. " << p2->getNama() << "\n";
-                cout << "3. " << p3->getNama() << "\n";
-                cout << "Pilihan: ";
-                cin >> pilihan_target;
-                
-                if (pilihan_target == 1) {
-                    p2->blessDefense(p1);
-                } else if (pilihan_target == 2) {
-                    p2->blessDefense(p2);
-                } else if (pilihan_target == 3) {
-                    p2->blessDefense(p3);
-                }
-            } else {
-                cout << "Pilihan tidak valid. Giliran terlewat.\n";
-            }
-        } else if (pemain_pertama == p3) {
-            cout << "\n" << p3->getNama() << " - Pilih aksi:\n";
-            cout << "1. Serangan biasa\n";
-            cout << "2. Basic Attack (tanpa panah)\n";
-            cout << "3. Special Attack (butuh 20 mana dan 1 panah)\n";
-            cout << "4. Reload Arrows\n";
-            cout << "Pilihan: ";
-            cin >> aksi;
-
-            if (aksi == 1) {
-                p3->serang(m1);
-            } else if (aksi == 2) {
-                p3->basicAttack(m1);
-            } else if (aksi == 3) {
-                p3->specialAttack(m1);
-            } else if (aksi == 4) {
-                p3->reloadArrows();
-            } else {
-                cout << "Pilihan tidak valid. Giliran terlewat.\n";
-            }
-        }
-
-        if (!m1->isAlive()) {
-            cout << "\nðŸŽ‰ " << m1->getNama() << " telah dikalahkan!\n";
-            int exp_reward = 50;
-            p1->gainExp(exp_reward);
-            if (p2->isAlive()) p2->gainExp(exp_reward);
-            if (p3->isAlive()) p3->gainExp(exp_reward);
-            break;
-        }
+        displayBattleStatus(active_roster, monster);
         
-        if (!pemain_kedua->isAlive()) {
-            cout << pemain_kedua->getNama() << " sudah gugur and melewati giliran.\n";
-        } else {
-            if (pemain_kedua == p1) {
-                cout << "\n" << p1->getNama() << " - Pilih aksi:\n";
-                cout << "1. Serangan biasa\n";
-                cout << "2. Heal (butuh 10 mana)\n";
-                cout << "3. Mass Heal (butuh 25 mana)\n";
-                cout << "4. Regen Mana\n";
-                cout << "Pilihan: ";
-                cin >> aksi;
-
-                if (aksi == 1) {
-                    p1->serang(m1);
-                } else if (aksi == 2) {
-                    int pilihan_target;
-                    cout << "\nPilih target untuk Heal:\n";
-                    cout << "1. " << p1->getNama() << "\n";
-                    cout << "2. " << p2->getNama() << "\n";
-                    cout << "3. " << p3->getNama() << "\n";
-                    cout << "Pilihan: ";
-                    cin >> pilihan_target;
-                    
-                    if (pilihan_target == 1) {
-                        p1->heal(p1);
-                    } else if (pilihan_target == 2) {
-                        p1->heal(p2);
-                    } else if (pilihan_target == 3) {
-                        p1->heal(p3);
-                    }
-                } else if (aksi == 3) {
-                    p1->massHeal(p1, p2, p3);
-                } else if (aksi == 4) {
-                    p1->regenMana(15);
-                } else {
-                    cout << "Pilihan tidak valid. Giliran terlewat.\n";
+        // Hero turns
+        for (size_t i = 0; i < active_roster.size(); i++) {
+            Entity* hero = active_roster[i];
+            
+            if (!hero || !hero->isAlive()) {
+                if (hero) {
+                    cout << "\n❌ " << hero->getNama() << " tidak dapat bertindak (gugur).\n";
                 }
-            } else if (pemain_kedua == p2) {
-                cout << "\n" << p2->getNama() << " - Pilih aksi:\n";
-                cout << "1. Serangan biasa\n";
-                cout << "2. powerStrike\n";
-                cout << "3. ultimateCharge\n";
-                cout << "4. Shield Block (butuh 20 Faith)\n";
-                cout << "5. Regen Faith\n";
-                cout << "6. Bless Defense (butuh 15 Faith)\n";
-                cout << "Pilihan: ";
-                cin >> aksi;
-
-                if (aksi == 1) {
-                    p2->serang(m1);
-                } else if (aksi == 2) {
-                    p2->powerStrike(m1);
-                } else if (aksi == 3) {
-                    p2->ultimateCharge(m1);
-                } else if (aksi == 4) {
-                    p2->shieldBlock();
-                } else if (aksi == 5) {
-                    p2->regenFaith();
-                } else if (aksi == 6) {
-                    int pilihan_target;
-                    cout << "\nPilih target untuk Bless Defense:\n";
-                    cout << "1. " << p1->getNama() << "\n";
-                    cout << "2. " << p2->getNama() << "\n";
-                    cout << "3. " << p3->getNama() << "\n";
-                    cout << "Pilihan: ";
-                    cin >> pilihan_target;
-
-                    if (pilihan_target == 1) {
-                        p2->blessDefense(p1);
-                    } else if (pilihan_target == 2) {
-                        p2->blessDefense(p2);
-                    } else if (pilihan_target == 3) {
-                        p2->blessDefense(p3);
-                    }
-                } else {
-                    cout << "Pilihan tidak valid. Giliran terlewat.\n";
-                }
-            } else if (pemain_kedua == p3) {
-                cout << "\n" << p3->getNama() << " - Pilih aksi:\n";
-                cout << "1. Serangan biasa\n";
-                cout << "2. Basic Attack (tanpa panah)\n";
-                cout << "3. Special Attack (butuh 20 mana dan 1 panah)\n";
-                cout << "4. Reload Arrows\n";
-                cout << "Pilihan: ";
-                cin >> aksi;
-
-                if (aksi == 1) {
-                    p3->serang(m1);
-                } else if (aksi == 2) {
-                    p3->basicAttack(m1);
-                } else if (aksi == 3) {
-                    p3->specialAttack(m1);
-                } else if (aksi == 4) {
-                    p3->reloadArrows();
-                } else {
-                    cout << "Pilihan tidak valid. Giliran terlewat.\n";
-                }
+                continue;
             }
             
-            if (!m1->isAlive()) {
-                cout << "\nðŸŽ‰ " << m1->getNama() << " telah dikalahkan!\n";
-                int exp_reward = 50;
-                p1->gainExp(exp_reward);
-                if (p2->isAlive()) p2->gainExp(exp_reward);
-                if (p3->isAlive()) p3->gainExp(exp_reward);
-                break;
-            } 
+            executeHeroTurn(hero, monster, active_roster);
+            hero->updateEffects();
+            
+            if (!monster->isAlive()) {
+                cout << "\n🎉 " << monster->getNama() << " telah dikalahkan!\n";
+                goto battle_end;
+            }
         }
         
-        // Monster selalu menyerang sekali setiap turn
-        if (p1->isAlive() && p2->isAlive() && p3->isAlive()) {
-            int target_random = rand() % 3;
-            if (target_random == 0) {
-                m1->serang(p1);
-            } else if (target_random == 1) {
-                m1->serang(p2);
-            } else {
-                m1->serang(p3);
-            }
-        } else if (p1->isAlive() && p2->isAlive()) {
-            int target_random = rand() % 2;
-            if (target_random == 0) {
-                m1->serang(p1);
-            } else {
-                m1->serang(p2);
-            }
-        } else if (p1->isAlive() && p3->isAlive()) {
-            int target_random = rand() % 2;
-            if (target_random == 0) {
-                m1->serang(p1);
-            } else {
-                m1->serang(p3);
-            }
-        } else if (p2->isAlive() && p3->isAlive()) {
-            int target_random = rand() % 2;
-            if (target_random == 0) {
-                m1->serang(p2);
-            } else {
-                m1->serang(p3);
-            }
-        } else if (p1->isAlive()) {
-            m1->serang(p1);
-        } else if (p2->isAlive()) {
-            m1->serang(p2);
-        } else if (p3->isAlive()) {
-            m1->serang(p3);
+        // Monster turn
+        if (monster->isAlive()) {
+            executeMonsterTurn(monster, active_roster);
+            monster->updateEffects();
         }
         
-        if (!m1->isAlive()) {
-            cout << "\nðŸŽ‰ " << m1->getNama() << " telah dikalahkan!\n";
-            break;
+        // Remove dead heroes from roster
+        auto it = active_roster.begin();
+        while (it != active_roster.end()) {
+            if (!(*it)->isAlive()) {
+                cout << "\n💀 " << (*it)->getNama() << " telah gugur!\n";
+                it = active_roster.erase(it);
+            } else {
+                ++it;
+            }
         }
-
-        // Cek apakah ada pemain yang mati
-        if (!p1->isAlive()) {
-            cout << "\nðŸ’€ " << p1->getNama() << " telah gugur dalam pertempuran...\n";
+        
+        // Check win/loss
+        if (active_roster.empty()) {
+            cout << "\n💀 Semua hero telah gugur! Monster menang!\n";
+            goto battle_end;
         }
-
-        if (!p2->isAlive()) {
-            cout << "\nðŸ’€ " << p2->getNama() << " telah gugur dalam pertempuran...\n";
+        
+        if (!monster->isAlive()) {
+            cout << "\n🎉 Monster telah dikalahkan! Pemain menang!\n";
+            goto battle_end;
         }
-
-        if (!p3->isAlive()) {
-            cout << "\nðŸ’€ " << p3->getNama() << " telah gugur dalam pertempuran...\n";
-        }
-        cout << "===============================================================================================\n";
+        
+        cout << "\n===============================================================================================\n";
         turn++;
     }
-    cout << "\n=== BATTLE END ===\n";
-    cout << "Hasil Pertarungan:\n";
-    if (m1->isAlive()) {
-        cout << "Monster " << m1->getNama() << " menang!\n";
-    } else {
-        cout << "Pemain menang!\n";
-    }
-    cout << "=============================\n";
-    cout << "Status Akhir:\n";
-    cout << p1->getNama() << " - HP: " << p1->getHP() << "/" << p1->getMaxHP() << ", Mana: " << p1->getMana() << "/" << p1->getMaxMana() << "\n";
-    cout << p2->getNama() << " - HP: " << p2->getHP() << "/" << p2->getMaxHP() << ", Faith: " << p2->getFaith() << "/" << p2->getMaxfaith() << "\n";
-    cout << p3->getNama() << " - HP: " << p3->getHP() << "/" << p3->getMaxHP() << ", Arrows: " << p3->getArrows() << "/" << p3->getMaxarrows() << ", Mana: " << p3->getMana() << "/" << p3->getMaxmana() << "\n";
-    cout << m1->getNama() << " - HP: " << m1->getHP() << "/" << m1->getMaxHP() << "\n";
-    cout << "total turn: " << turn - 1 << "\n";
-    cout << "Total damage diterima oleh " << p1->getNama() << ": " << (p1->getMaxHP() - p1->getHP()) << "\n";
-    cout << "Total damage diterima oleh " << p2->getNama() << ": " << (p2->getMaxHP() - p2->getHP()) << "\n";
-    cout << "Total damage diterima oleh " << p3->getNama() << ": " << (p3->getMaxHP() - p3->getHP()) << "\n";
-    cout << "Total damage diterima oleh " << m1->getNama() << ": " << (m1->getMaxHP() - m1->getHP()) << "\n";   
-    cout << "=============================\n";
-    cout << "Terima kasih telah bermain!\n";
-    cout << "=============================\n";
     
-
-    // Pembersihan memori
-    delete p1;
-    delete p2;
-    delete p3;
-    delete m1;
-
+    battle_end:
+    cout << "\n=== PERTARUNGAN SELESAI ===\n";
+    cout << "Total turn: " << turn << "\n";
+    cout << "Monster HP: " << monster->getHP() << "/" << monster->getMaxHP() << "\n";
+    cout << "\nHero Status Akhir:\n";
+    for (auto hero : active_roster) {
+        cout << "- " << hero->getNama() << " HP: " << hero->getHP() << "/" << hero->getMaxHP() << "\n";
+    }
+    cout << "============================\n";
+    
+    // Cleanup
+    for (auto hero : active_roster) delete hero;
+    delete monster;
+    
     return 0;
 }

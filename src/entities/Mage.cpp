@@ -24,8 +24,8 @@ void Mage::fireball(Entity* target) {
 }
 
 void Mage::ultimateBurst(Entity* target) {
-    if (mana >= 20) {
-        mana -= 20;
+    if (mana >= 30) {
+        mana -= 30;
         int damage_skill = attack_power * 2;
         cout << "\n🔥 " << nama << " menggunakan Skill Kritis [Ultimate Burst]! (Sisa Mana: " << mana << ")\n";
         target->terimaDamage(damage_skill);

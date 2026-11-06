@@ -4,6 +4,7 @@
 #include <vector>
 #include "Floor.h"
 #include "entities/Monster.h"
+#include "entities/Entity.h"
 
 class Progression {
 private:
@@ -22,6 +23,9 @@ public:
     
     // Monster factory
     static Monster* createMonsterForFloor(int floor_num);
+    
+    // Hero selection
+    static std::vector<Entity*> displayHeroSelectionMenu();
 };
 
 #endif

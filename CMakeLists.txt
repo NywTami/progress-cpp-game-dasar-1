@@ -12,7 +12,6 @@ add_executable(BattleGame
     src/entities/Knight.cpp
     src/entities/Archer.cpp
     src/entities/Berserker.cpp
-    src/entities/Summoner.cpp
     src/entities/Hunter.cpp
     src/entities/Monster.cpp
     src/Progression.cpp

@@ -76,7 +76,7 @@ void Support::buffDefense(Entity* target) {
 
 void Support::buffAttackPower(Entity* target) {
     const int biaya_mana = 20;
-    const int buff_percent = 30;  // +30% attack
+    const int buff_amount = 10;
 
     if (mana < biaya_mana) {
         cout << "\n⚠️ " << nama << " tidak memiliki cukup mana untuk Buff Attack Power! "
@@ -85,8 +85,7 @@ void Support::buffAttackPower(Entity* target) {
     }
 
     mana -= biaya_mana;
-    int buff_amount = (target->getAttackPower() * buff_percent) / 100;
-    target->tambahDefense(buff_amount);  // TODO: Need buffAttackPower method in Entity
-    cout << "\n✨ " << nama << " menggunakan Buff Attack Power pada "
-         << target->getNama() << "! (Sisa Mana: " << mana << "/" << max_mana << ")\n";
+    target->tambahAttackPower(buff_amount);
+    cout << "\n✨ " << nama << " buffed attack power " << target->getNama()
+         << " +" << buff_amount << "! (Sisa Mana: " << mana << "/" << max_mana << ")\n";
 }

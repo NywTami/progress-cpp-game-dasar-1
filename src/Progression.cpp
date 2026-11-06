@@ -1,5 +1,7 @@
 #include "Progression.h"
+#include "HeroRoster.h"
 #include <iostream>
+#include <limits>
 
 using namespace std;
 
@@ -74,4 +76,56 @@ Monster* Progression::createMonsterForFloor(int floor_num) {
     }
     
     return nullptr;
+}
+
+vector<Entity*> Progression::displayHeroSelectionMenu() {
+    vector<Entity*> roster;
+    
+    cout << "\n===============================================================================================\n";
+    cout << "==========                    Pemilihan 3 Hero Pertarungan                     ==========\n";
+    cout << "===============================================================================================\n\n";
+    
+    cout << "=== Daftar Hero Tersedia ===\n";
+    for (int i = 0; i < HeroRoster::HERO_COUNT; i++) {
+        const auto& spec = HeroRoster::HERO_SPECS[i];
+        cout << i << ". " << spec.name 
+             << " | HP: " << spec.max_hp 
+             << " | ATK: " << spec.attack 
+             << " | DEF: " << spec.defense 
+             << " | Resource: " << spec.primary_resource << "\n";
+    }
+    cout << "\n";
+    
+    for (int slot = 1; slot <= 3; slot++) {
+        int hero_choice = -1;
+        bool valid = false;
+        
+        while (!valid) {
+            cout << "Pilih Hero " << slot << " (0-" << (HeroRoster::HERO_COUNT - 1) << "): ";
+            
+            if (!(cin >> hero_choice)) {
+                cin.clear();
+                cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                cout << "Input tidak valid. Masukkan angka.\n";
+                continue;
+            }
+            
+            if (hero_choice >= 0 && hero_choice < HeroRoster::HERO_COUNT) {
+                valid = true;
+            } else {
+                cout << "Pilihan tidak valid. Masukkan 0-" << (HeroRoster::HERO_COUNT - 1) << ".\n";
+            }
+        }
+        
+        Entity* hero = HeroRoster::createHero(hero_choice, "");
+        if (hero) {
+            roster.push_back(hero);
+            cout << "✅ " << HeroRoster::HERO_SPECS[hero_choice].name << " ditambahkan ke roster.\n\n";
+        } else {
+            cout << "⚠️  Gagal membuat hero. Coba lagi.\n";
+            slot--;
+        }
+    }
+    
+    return roster;
 }

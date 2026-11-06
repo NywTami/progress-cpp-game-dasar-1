@@ -48,6 +48,7 @@ public:
     // Metode healing dan buff
     void pulihkanHP(int amount);
     void tambahDefense(int amount);
+    void tambahAttackPower(int amount);
     void resetDefense(int original_defense);
     int getAttackPower() const { return attack_power; }
     int getOriginalDefense() const { return defense; }

@@ -91,9 +91,9 @@ int main() {
     Monster* monster = new Monster("Goblin Boss", 300, 300, 35, 15);
     
     cout << "\n=== PERTARUNGAN DIMULAI ===\n";
-    cout << "Hero 0: " << active_roster[0]->getNama() << "\n";
-    cout << "Hero 1: " << active_roster[1]->getNama() << "\n";
-    cout << "Hero 2: " << active_roster[2]->getNama() << "\n";
+    cout << "Hero 1: " << active_roster[0]->getNama() << "\n";
+    cout << "Hero 2: " << active_roster[1]->getNama() << "\n";
+    cout << "Hero 3: " << active_roster[2]->getNama() << "\n";
     cout << "VS\n";
     cout << "Monster: " << monster->getNama() << "\n";
     cout << "============================\n\n";

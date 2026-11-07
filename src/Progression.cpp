@@ -88,7 +88,7 @@ vector<Entity*> Progression::displayHeroSelectionMenu() {
     cout << "=== Daftar Hero Tersedia ===\n";
     for (int i = 0; i < HeroRoster::HERO_COUNT; i++) {
         const auto& spec = HeroRoster::HERO_SPECS[i];
-        cout << i << ". " << spec.name 
+        cout << i + 1 << ". " << spec.name 
              << " | HP: " << spec.max_hp 
              << " | ATK: " << spec.attack 
              << " | DEF: " << spec.defense 
@@ -101,7 +101,7 @@ vector<Entity*> Progression::displayHeroSelectionMenu() {
         bool valid = false;
         
         while (!valid) {
-            cout << "Pilih Hero " << slot << " (0-" << (HeroRoster::HERO_COUNT - 1) << "): ";
+            cout << "Pilih Hero " << slot << " (1-" << (HeroRoster::HERO_COUNT) << "): ";
             
             if (!(cin >> hero_choice)) {
                 cin.clear();
@@ -109,11 +109,11 @@ vector<Entity*> Progression::displayHeroSelectionMenu() {
                 cout << "Input tidak valid. Masukkan angka.\n";
                 continue;
             }
-            
+            hero_choice--; // Adjust for 0-based index
             if (hero_choice >= 0 && hero_choice < HeroRoster::HERO_COUNT) {
                 valid = true;
             } else {
-                cout << "Pilihan tidak valid. Masukkan 0-" << (HeroRoster::HERO_COUNT - 1) << ".\n";
+                cout << "Pilihan tidak valid. Masukkan 1-" << (HeroRoster::HERO_COUNT) << ".\n";
             }
         }
         

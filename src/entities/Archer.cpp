@@ -22,9 +22,9 @@ void Archer::basicAttack(Entity* target) {
 //2
 void Archer::specialAttack(Entity* target) {
     if (arrows > 0) {
-        if (mana >= 20) {
+        if (mana >= 10) {
             arrows--;
-            mana -= 20;
+            mana -= 10;
             cout << "\n🏹 " << nama << " Menggunakan Special Attack!\n";
             int damage = (int)(attack_power * 1.5);  // fix: explicit cast
             target->terimaDamage(damage);
@@ -41,8 +41,8 @@ void Archer::specialAttack(Entity* target) {
 
 //3
 void Archer::ultimateArrow(Entity* target) {
-    if (mana >= 20) {
-        mana -= 20;
+    if (mana >= 25) {
+        mana -= 25;
         cout << "\n🏹 " << nama << " Menggunakan Ultimate Arrow!\n";
         int damage = attack_power * 3;
         target->terimaDamage(damage);
@@ -93,8 +93,13 @@ void Archer::poisonArrow(Entity* target) {
 
 //7
 void Archer::multiShot(Entity* target) {
-    if (mana >= 25) {
-        mana -= 25;
+    arrows -= 2;
+    if (arrows < 0) {
+        cout << "\n🏹 " << nama << " kehabisan panah!\n";
+        reloadArrows();
+    }
+    if (mana >= 15) {
+        mana -= 15;
         cout << "\n🏹 " << nama << " menggunakan Multi Shot!\n";
         int damage = attack_power * 2;
         target->terimaDamage(damage);
@@ -119,18 +124,20 @@ void Archer::rapidFire(Entity* target) {
 
 //9
 void Archer::reloadArrows() {
-    arrows++;
+    int reloaded = max_arrows * 4 / 10; // Reload 40% of max_arrows
+    arrows += reloaded;
     if (arrows > max_arrows) {
         arrows = max_arrows;
     }
-    cout << "\n🏹 " << nama << " mengisi ulang anak panah sebanyak 1! (Arrows: " << arrows << "/" << max_arrows << ")\n";
+    cout << "\n🏹 " << nama << " mengisi ulang anak panah sebanyak " << reloaded << "! (Arrows: " << arrows << "/" << max_arrows << ")\n";
 }
 
 //10
 void Archer::regenMana() {
-    mana += 10;
+    int regen_amount = max_mana * 50 / 100; // Amount of mana to regenerate
+    mana += regen_amount;
     if (mana > max_mana) {
         mana = max_mana;
     }
-    cout << "\n💧 " << nama << " meregenerasi 10 mana! (Mana: " << mana << "/" << max_mana << ")\n";
+    cout << "\n💧 " << nama << " meregenerasi " << regen_amount << " mana! (Mana: " << mana << "/" << max_mana << ")\n";
 }

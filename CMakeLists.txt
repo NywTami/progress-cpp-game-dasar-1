@@ -16,6 +16,8 @@ add_executable(BattleGame
     src/entities/Monster.cpp
     src/Progression.cpp
     src/HeroRoster.cpp
+    src/battle/HeroTurn.cpp
+    src/battle/HeroBattle.cpp
 )
 
-target_include_directories(BattleGame PRIVATE src src/entities)
+target_include_directories(BattleGame PRIVATE src src/entities src/battle)
